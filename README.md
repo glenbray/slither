@@ -49,7 +49,7 @@ gem 'slither', git: 'git@github.com:glenbray/slither.git'
     d.body do |body|
       body.trap { |line| line[0,4] =~ /[^(HEAD|FOOT)]/ }
       body.column :id, 10, :type => :integer
-      body.column :name, 10, :align => :left
+      body.column :name, 10, :align => :left, :transform => lambda { |name| name.upcase }
       body.spacer 3
       body.column :state, 2
     end
