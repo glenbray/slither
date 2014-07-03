@@ -24,7 +24,7 @@ class Slither
     end
 
     def parse(value)
-      send("value_of_#{@type.to_s}", value)
+      send("parse_#{@type.to_s}", value)
     rescue
       raise ParserError, "Error parsing column ''#{name}'. The value '#{value}' could not be converted to type #{@type}: #{$!}"
     end
@@ -35,29 +35,33 @@ class Slither
       puts "Could not format column '#{@name}' as a '#{@type}' with formatter '#{formatter}' and value of '#{value}' (formatted: '#{to_s(value)}'). #{$!}"
     end
 
+    def method_missing(method, *args)
+      default_to_s(args[0])
+    end
+
     private
 
-    def value_of_integer(value)
+    def parse_integer(value)
       value.to_i
     end
 
-    def value_of_float(value)
+    def parse_float(value)
       value.to_f
     end
 
-    def value_of_money(value)
-      value.value_of_float(value)
+    def parse_money(value)
+      value.parse_float(value)
     end
 
-    def value_of_money_with_implied_decimal(value)
+    def parse_money_with_implied_decimal(value)
       value.to_f / 100
     end
 
-    def value_of_string(value)
+    def parse_string(value)
       value.strip
     end
 
-    def value_of_date(value)
+    def parse_date(value)
       if @options[:format]
         Date.strptime(value, @options[:format])
       else
@@ -91,31 +95,39 @@ class Slither
     end
 
     def to_s(value)
-      result = case @type
-        when :date
-          # If it's a DBI::Timestamp object, see if we can convert it to a Time object
-          unless value.respond_to?(:strftime)
-            value = value.to_time if value.respond_to?(:to_time)
-          end
-          if value.respond_to?(:strftime)
-            if @options[:format]
-              value.strftime(@options[:format])
-            else
-              value.strftime
-            end
-          else
-            value.to_s
-          end
-        when :float
-          @options[:format] ? @options[:format] % value.to_f : value.to_f.to_s
-        when :money
-          "%.2f" % value.to_f
-        when :money_with_implied_decimal
-          "%d" % (value.to_f * 100)
-        else
-          value.to_s
-      end
+      result = send("#{@type}_to_s", value)
       validate_size result
+    end
+
+    def date_to_s(value)
+      unless value.respond_to?(:strftime)
+        value = value.to_time if value.respond_to?(:to_time)
+      end
+      if value.respond_to?(:strftime)
+        if @options[:format]
+          value.strftime(@options[:format])
+        else
+          value.strftime
+        end
+      else
+        value.to_s
+      end
+    end
+
+    def float_to_s(value)
+      @options[:format] ? @options[:format] % value.to_f : value.to_f.to_s
+    end
+
+    def money_to_s(value)
+      "%.2f" % value.to_f
+    end
+
+    def money_with_implied_decimal_to_s(value)
+      "%d" % (value.to_f * 100)
+    end
+
+    def default_to_s(value)
+      value.to_s
     end
 
     def assert_valid_options(options)
