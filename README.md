@@ -1,22 +1,22 @@
 [![Code Climate](https://codeclimate.com/github/glenbray/slither.png)](https://codeclimate.com/github/glenbray/slither)
 [![Build Status](https://travis-ci.org/glenbray/slither.svg?branch=master)](https://travis-ci.org/glenbray/slither)
 
-== slither
+#slither
     by Ryan Wood
     http://ryanwood.com
 
-== DESCRIPTION:
+##DESCRIPTION:
 
 A simple, clean DSL for describing, writing, and parsing fixed-width text files.
 
-== FEATURES:
+##FEATURES:
 
 * Easy DSL syntax
 * Can parse and format fixed width files
 * Templated sections for reuse
 * Helpful error messages for invalid data
 
-== SYNOPSIS:
+##SYNOPSIS:
 
 ```ruby
 
