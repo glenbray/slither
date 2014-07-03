@@ -4,19 +4,21 @@ class Slither
   class ParserError < RuntimeError; end
 
   class Column
-    attr_reader :name, :length, :alignment, :type, :padding, :precision, :options
+    attr_reader :name, :length, :alignment, :type, :padding, :precision, :options, :transform
 
     def initialize(name, length, options = {})
       assert_valid_options(options)
       @name = name
       @length = length
       @options = options
+
       @alignment = options[:align] || :right
       @type = options[:type] || :string
       @padding = options[:padding] || :space
       @truncate = options[:truncate] || false
       # Only used with floats, this determines the decimal places
       @precision = options[:precision]
+      @transform = options[:transform] # Proc for custom transformations of data
     end
 
     def unpacker
@@ -24,7 +26,8 @@ class Slither
     end
 
     def parse(value)
-      send("parse_#{@type.to_s}", value)
+      parsed_value = send("parse_#{@type.to_s}", value)
+      @transform.nil? ? parsed_value : @transform.call(parsed_value)
     rescue
       raise ParserError, "Error parsing column ''#{name}'. The value '#{value}' could not be converted to type #{@type}: #{$!}"
     end
