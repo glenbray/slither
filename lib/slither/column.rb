@@ -24,7 +24,7 @@ class Slither
     end
 
     def parse(value)
-      send("value_of_#{@type.to_s}", value)
+      send("parse_#{@type.to_s}", value)
     rescue
       raise ParserError, "Error parsing column ''#{name}'. The value '#{value}' could not be converted to type #{@type}: #{$!}"
     end
@@ -41,27 +41,27 @@ class Slither
 
     private
 
-    def value_of_integer(value)
+    def parse_integer(value)
       value.to_i
     end
 
-    def value_of_float(value)
+    def parse_float(value)
       value.to_f
     end
 
-    def value_of_money(value)
-      value.value_of_float(value)
+    def parse_money(value)
+      value.parse_float(value)
     end
 
-    def value_of_money_with_implied_decimal(value)
+    def parse_money_with_implied_decimal(value)
       value.to_f / 100
     end
 
-    def value_of_string(value)
+    def parse_string(value)
       value.strip
     end
 
-    def value_of_date(value)
+    def parse_date(value)
       if @options[:format]
         Date.strptime(value, @options[:format])
       else
