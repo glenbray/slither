@@ -1,5 +1,6 @@
-{<img src="https://codeclimate.com/github/glenbray/slither.png" />}[https://codeclimate.com/github/glenbray/slither]
-{<img src="https://travis-ci.org/glenbray/slither.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/glenbray/slither]
+[![Code Climate](https://codeclimate.com/github/glenbray/slither.png)](https://codeclimate.com/github/glenbray/slither)
+[![Build Status](https://travis-ci.org/glenbray/slither.svg?branch=master)](https://travis-ci.org/glenbray/slither)
+
 == slither
     by Ryan Wood
     http://ryanwood.com
@@ -16,6 +17,8 @@ A simple, clean DSL for describing, writing, and parsing fixed-width text files.
 * Helpful error messages for invalid data
 
 == SYNOPSIS:
+
+```ruby
 
   # Create a Slither::Defintion to describe a file format
   Slither.define :simple, :by_bytes => false do |d|
@@ -48,6 +51,7 @@ A simple, clean DSL for describing, writing, and parsing fixed-width text files.
       footer.column :record_count, 10
     end
   end
+```
 
 Supported types are: string, integer, date, float, money, and money_with_implied_decimal.
 
@@ -56,6 +60,8 @@ Use :by_bytes => false to support sections of different lengths and length speci
 in number of characters.
 
 Then either feed it a nested struct with data values to create the file in the defined format:
+
+```ruby
 
   test_data = {
     :body => [
@@ -73,15 +79,16 @@ Then either feed it a nested struct with data values to create the file in the d
   # Writes the file
   Slither.write(output_filename, :simple, test_data)
 
-or parse files already in that format into a nested hash:
+  # or parse files already in that format into a nested hash:
 
-   parsed_data = Slither.parse(input_filename, :simple)
-   parsed_data = Slither.parseIo(io_object, :simple)
+  parsed_data = Slither.parse(input_filename, :simple)
+  parsed_data = Slither.parseIo(io_object, :simple)
 
+```
 
 == INSTALL:
 
-sudo gem install slither
+gem install slither
 
 == LICENSE:
 
