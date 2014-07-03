@@ -16,6 +16,15 @@ A simple, clean DSL for describing, writing, and parsing fixed-width text files.
 * Templated sections for reuse
 * Helpful error messages for invalid data
 
+
+##INSTALL:
+
+add the following to gemfile
+
+```ruby
+gem 'slither', git: 'git@github.com:glenbray/slither.git'
+```
+
 ##SYNOPSIS:
 
 ```ruby
@@ -86,11 +95,7 @@ Then either feed it a nested struct with data values to create the file in the d
 
 ```
 
-== INSTALL:
-
-gem install slither
-
-== LICENSE:
+##LICENSE:
 
 (The MIT License)
 
