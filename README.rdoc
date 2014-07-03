@@ -1,5 +1,5 @@
 {<img src="https://codeclimate.com/github/glenbray/slither.png" />}[https://codeclimate.com/github/glenbray/slither]
-
+{<img src="https://travis-ci.org/glenbray/slither.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/glenbray/slither]
 == slither
     by Ryan Wood
     http://ryanwood.com
