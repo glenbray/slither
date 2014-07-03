@@ -106,6 +106,12 @@ describe Slither::Column do
       expect(dt).to be_a(Date)
       expect(dt.to_s).to eq('2009-08-22')
     end
+
+    it "should accept a proc to transform parsed data" do
+      states = { '1' => 'NSW', '2' => 'VIC', '3' => 'QLD' }
+      @column = Slither::Column.new(:state, 1, transform: lambda { |v| states[v] })
+      expect(@column.parse('1')).to eq('NSW')
+    end
   end
 
   describe "when applying formatting options" do
@@ -220,5 +226,4 @@ describe Slither::Column do
       expect(@column.format(dt)).to eq('08222009')
     end
   end
-
 end
