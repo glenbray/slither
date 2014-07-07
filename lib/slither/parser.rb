@@ -1,6 +1,8 @@
 class Slither
   class Parser
 
+    # attr_reader :errors
+
     def initialize(definition, file_io)
       @definition = definition
       @file = file_io
@@ -9,9 +11,9 @@ class Slither
     end
 
     def parse
-      parsed = {}
+      parsed = {:errors => []}
 
-      @file.each_line do |line|
+      @file.each_line.with_index do |line, line_no|
         line.chomp! if line
         next if line.empty?
         @definition.sections.each do |section|
@@ -56,12 +58,6 @@ class Slither
 
     private
 
-    def validate_required_sections(parsed)
-      @definition.sections.each do |section|
-        raise(Slither::RequiredSectionNotFoundError, "Required section '#{section.name}' was not found.") unless parsed[section.name] || section.optional
-      end
-    end
-
     def fill_content(line, section, parsed)
       parsed[section.name] ||= []
       parsed[section.name] << section.parse(line)
@@ -101,6 +97,12 @@ class Slither
         end
       end
       parsed
+    end
+
+    def validate_required_sections(parsed)
+      @definition.sections.each do |section|
+        raise(Slither::RequiredSectionNotFoundError, "Required section '#{section.name}' was not found.") unless parsed[section.name] || section.optional
+      end
     end
   end
 end

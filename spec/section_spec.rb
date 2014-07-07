@@ -121,20 +121,37 @@ describe Slither::Section do
       @line = '   45      Ryan      WoodSC '
       @section = Slither::Section.new(:body)
       @column_content = { :id => 5, :first => 10, :last => 10, :state => 2 }
+      @column_content.each { |k,v| @section.column(k, v) }
     end
 
     it "should return a key for key column" do
-      @column_content.each { |k,v| @section.column(k, v) }
       parsed = @section.parse(@line)
       @column_content.each_key { |name| expect(parsed).to have_key(name) }
     end
 
     it "should not return a key for reserved names" do
-      @column_content.each { |k,v| @section.column(k, v) }
       @section.spacer 5
       expect(@section.columns.size).to eq(5)
       parsed = @section.parse(@line)
       expect(parsed.keys.size).to eq(4)
+    end
+
+    it "should return a hash for results" do
+      parsed = @section.parse(@line)
+      expect(parsed).to be_a(Hash)
+    end
+
+    it "should construct a correctly formed hash" do
+      parsed = @section.parse(@line)
+      expect(parsed[:id]).to eq('45')
+      expect(parsed[:first]).to eq('Ryan')
+      expect(parsed[:last]).to eq('Wood')
+      expect(parsed[:state]).to eq('SC')
+    end
+
+    it "should return line_no in result hash" do
+      parsed = @section.parse(@line)
+      expect(parsed[:line_no]).to eq(1)
     end
   end
 
