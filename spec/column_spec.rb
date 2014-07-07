@@ -63,54 +63,54 @@ describe Slither::Column do
 
   describe "when parsing a value from a file" do
     it "should default to a string" do
-      expect(@column.parse('    name ')).to eq('name')
-      expect(@column.parse('      234')).to eq('234')
-      expect(@column.parse('000000234')).to eq('000000234')
-      expect(@column.parse('12.34')).to eq('12.34')
+      expect(@column.parse('    name ')).to eq(result: 'name')
+      expect(@column.parse('      234')).to eq(result: '234')
+      expect(@column.parse('000000234')).to eq(result: '000000234')
+      expect(@column.parse('12.34')).to eq(result: '12.34')
     end
 
     it "should support the integer type" do
       @column = Slither::Column.new(:amount, 10, :type=> :integer)
-      expect(@column.parse('234     ')).to eq(234)
-      expect(@column.parse('     234')).to eq(234)
-      expect(@column.parse('00000234')).to eq(234)
-      expect(@column.parse('Ryan    ')).to eq(0)
-      expect(@column.parse('00023.45')).to eq(23)
+      expect(@column.parse('234     ')).to eq(result: 234)
+      expect(@column.parse('     234')).to eq(result: 234)
+      expect(@column.parse('00000234')).to eq(result: 234)
+      expect(@column.parse('Ryan    ')).to eq(result: 0)
+      expect(@column.parse('00023.45')).to eq(result: 23)
     end
 
     it "should support the float type" do
       @column = Slither::Column.new(:amount, 10, :type=> :float)
-      expect(@column.parse('  234.45')).to eq(234.45)
-      expect(@column.parse('234.5600')).to eq(234.56)
-      expect(@column.parse('     234')).to eq(234.0)
-      expect(@column.parse('00000234')).to eq(234.0)
-      expect(@column.parse('Ryan    ')).to eq(0)
-      expect(@column.parse('00023.45')).to eq(23.45)
+      expect(@column.parse('  234.45')).to eq(result: 234.45)
+      expect(@column.parse('234.5600')).to eq(result: 234.56)
+      expect(@column.parse('     234')).to eq(result: 234.0)
+      expect(@column.parse('00000234')).to eq(result: 234.0)
+      expect(@column.parse('Ryan    ')).to eq(result: 0)
+      expect(@column.parse('00023.45')).to eq(result: 23.45)
     end
 
     it "should support the money_with_implied_decimal type" do
       @column = Slither::Column.new(:amount, 10, :type=> :money_with_implied_decimal)
-      expect(@column.parse('   23445')).to eq(234.45)
+      expect(@column.parse('   23445')).to eq(result: 234.45)
     end
 
     it "should support the date type" do
       @column = Slither::Column.new(:date, 10, :type => :date)
       dt = @column.parse('2009-08-22')
-      expect(dt).to be_a(Date)
-      expect(dt.to_s).to eq('2009-08-22')
+      expect(dt[:result]).to be_a(Date)
+      expect(dt[:result].to_s).to eq('2009-08-22')
     end
 
     it "should use the format option with date type if available" do
       @column = Slither::Column.new(:date, 10, :type => :date, :format => "%m%d%Y")
       dt = @column.parse('08222009')
-      expect(dt).to be_a(Date)
-      expect(dt.to_s).to eq('2009-08-22')
+      expect(dt[:result]).to be_a(Date)
+      expect(dt[:result].to_s).to eq('2009-08-22')
     end
 
     it "should accept a proc to transform parsed data" do
       states = { '1' => 'NSW', '2' => 'VIC', '3' => 'QLD' }
       @column = Slither::Column.new(:state, 1, transform: lambda { |v| states[v] })
-      expect(@column.parse('1')).to eq('NSW')
+      expect(@column.parse('1')).to eq(result: 'NSW')
     end
   end
 

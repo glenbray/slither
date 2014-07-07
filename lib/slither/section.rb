@@ -56,7 +56,8 @@ class Slither
       line_data = line.unpack(unpacker)
       row = {}
       @columns.each_with_index do |c, i|
-        row[c.name] = c.parse(line_data[i]) unless RESERVED_NAMES.include?(c.name)
+        next if reserved_name?(c)
+        row[c.name] = parse_column(c, line_data[i])[:result]
       end
       row
     end
@@ -65,7 +66,8 @@ class Slither
       line_data = line.unpack(@columns.map { |c| "a#{c.length}" }.join(''))
       row = ''
       @columns.each_with_index do |c, i|
-        row << "\n'#{c.name}':'#{line_data[i]}'" unless RESERVED_NAMES.include?(c.name)
+        next if reserved_name?(c)
+        row << "\n'#{c.name}':'#{line_data[i]}'"
       end
       row
     end
@@ -80,9 +82,17 @@ class Slither
 
     private
 
-      def unpacker
-        @columns.map { |c| c.unpacker }.join('')
-      end
+    def reserved_name?(column)
+      RESERVED_NAMES.include?(column.name)
+    end
+
+    def parse_column(column, line_data)
+      column.parse(line_data)
+    end
+
+    def unpacker
+      @columns.map { |c| c.unpacker }.join('')
+    end
 
   end
 end

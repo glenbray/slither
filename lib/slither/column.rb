@@ -27,7 +27,8 @@ class Slither
 
     def parse(value)
       parsed_value = send("parse_#{@type.to_s}", value)
-      @transform.nil? ? parsed_value : @transform.call(parsed_value)
+      parsed_value = transform_data(parsed_value)
+      parsed_result(parsed_value)
     rescue
       raise ParserError, "Error parsing column ''#{name}'. The value '#{value}' could not be converted to type #{@type}: #{$!}"
     end
@@ -43,6 +44,14 @@ class Slither
     end
 
     private
+
+    def parsed_result(value)
+      { result: value }
+    end
+
+    def transform_data(value)
+      @transform.nil? ? value : @transform.call(value)
+    end
 
     def parse_integer(value)
       value.to_i
