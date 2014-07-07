@@ -55,9 +55,12 @@ class Slither
     def parse(line)
       line_data = line.unpack(unpacker)
       row = {}
+      # row = {:errors => []}
       @columns.each_with_index do |c, i|
         next if reserved_name?(c)
-        row[c.name] = parse_column(c, line_data[i])[:result]
+        unpacked_line_data = c.parse(line_data[i])
+        row[c.name] = unpacked_line_data[:result]
+        # row[:errors] << unpacked_line_data[:error] if unpacked_line_data[:error]
       end
       row
     end

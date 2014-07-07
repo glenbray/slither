@@ -148,6 +148,11 @@ describe Slither::Section do
       expect(parsed[:last]).to eq('Wood')
       expect(parsed[:state]).to eq('SC')
     end
+
+    it "should return line_no in result hash" do
+      parsed = @section.parse(@line)
+      expect(parsed[:line_no]).to eq(1)
+    end
   end
 
   it "should try to match a line using the trap" do

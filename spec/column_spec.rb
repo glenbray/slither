@@ -112,6 +112,16 @@ describe Slither::Column do
       @column = Slither::Column.new(:state, 1, transform: lambda { |v| states[v] })
       expect(@column.parse('1')).to eq(result: 'NSW')
     end
+
+    context "errors" do
+      it "should return error when integer is invalid" do
+        col = Slither::Column.new(:age, 3, :type => :integer)
+        parsed = col.parse('x  ')
+        # Error parsing age, invalid integer
+        expect(parsed).to eq(:result => 'x  ', error: "Error parsing #{col.name}, invalid #{col.type}")
+      end
+
+    end
   end
 
   describe "when applying formatting options" do

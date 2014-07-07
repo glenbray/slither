@@ -14,6 +14,7 @@ describe Slither::Parser do
           b.trap { |line| line[0,4] != 'HEAD' &&  line[0,4] != 'FOOT'}
           b.column :first, 10
           b.column :last, 10
+          b.column :age, 3, type: :integer
         end
         d.footer do |f|
           f.trap { |line| line[0,4] == 'FOOT' }
@@ -27,13 +28,13 @@ describe Slither::Parser do
     end
 
     it "should add lines to the proper sections" do
-      @io.string = "HEAD         1\n      Paul    Hewson\n      Dave     Evans\nFOOT         1"
+      @io.string = "HEAD         1\n      Paul    Hewson20 \n      Dave     Evans 30\nFOOT         1"
 
       expected = {
         :header => [ {:type => "HEAD", :file_id => "1" }],
         :body => [
-          {:first => "Paul", :last => "Hewson" },
-          {:first => "Dave", :last => "Evans" }
+          {:first => "Paul", :last => "Hewson", :age => 20 },
+          {:first => "Dave", :last => "Evans", :age => 30 }
         ],
         :footer => [ {:type => "FOOT", :file_id => "1" }]
       }
@@ -44,14 +45,14 @@ describe Slither::Parser do
     it "should allow optional sections to be skipped" do
       @definition.sections[0].optional = true
       @definition.sections[2].optional = true
-      @io.string = '      Paul    Hewson'
+      @io.string = '      Paul    Hewson 10'
 
-      expected = { :body => [ {:first => "Paul", :last => "Hewson" } ] }
+      expected = { :body => [ {:first => "Paul", :last => "Hewson", :age => 10 } ] }
       expect(@parser.parse).to eq(expected)
     end
 
     it "should raise an error if a required section is not found" do
-      @io.string = '      Ryan      Wood'
+      @io.string = '      Ryan      Wood 23'
 
       expect { @parser.parse }.to raise_error(Slither::RequiredSectionNotFoundError, "Required section 'header' was not found.")
     end
@@ -72,6 +73,12 @@ describe Slither::Parser do
       expect { @parser.parse }.to raise_error(Slither::LineWrongSizeError)
     end
 
+    it "should return errors hash" do
+      @definition.sections[0].optional = true
+      @definition.sections[2].optional = true
+      @io.string = '      Paul    Hewson10x'
+      expect { @parser.parse }.to change{ @parser.errors }.from(nil).to({line_no: 1, message: 'Error parsing age, invalid integer'})
+    end
   end
 
   describe "when parsing by bytes" do
